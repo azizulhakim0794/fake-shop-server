@@ -31,7 +31,7 @@ client.connect(err => {
         const email = req.headers.email
       cartProductCollection.find({email:email})
       .toArray((err, documents) => {
-        res.send(documents)
+        res.status(201).send(documents)
       })
     })
     router.get("/addToCartSingleProduct",(req,res,next)=>{
@@ -39,7 +39,7 @@ client.connect(err => {
       console.log(id)
       cartProductCollection.find({_id:ObjectId(id)})
       .toArray((err, documents) => {
-        res.send(documents[0])
+        res.status(200).send(documents[0])
         console.log(documents[0])
       })
     })
@@ -47,7 +47,7 @@ client.connect(err => {
       const id = req.headers.id
       cartProductCollection.deleteOne({_id:ObjectId(id)})
       .then(result => {
-        res.send(result.deletedCount>1)
+        res.status(200).send(result.deletedCount>1)
       })
     })
     

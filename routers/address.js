@@ -1,6 +1,5 @@
 const express = require('express');
 const { MongoClient } = require('mongodb');
-const {ObjectId} = require('mongodb')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 require('dotenv').config()
@@ -16,14 +15,14 @@ client.connect(err => {
     const email = req.headers.email
     addressCollection.find({email:email})
     .toArray((err, documents) => {
-      res.send(documents[0])
+      res.status(200).send(documents[0])
     })
   })
   router.delete("/",(req,res,next)=>{
     const email = req.headers.email
     addressCollection.deleteOne({email:email})
     .then(result => {
-      res.send(result.deletedCount>0);
+      res.status(200).send(result.deletedCount>0);
     })
   })
   router.post('/',(req, res ,next) =>{
@@ -35,7 +34,7 @@ client.connect(err => {
     const email = req.body.email
     addressCollection.insertOne({country:country, city:city, state:state,zip:zip,address:address,email:email})
       .then(result => {
-        res.send(result.insertedCount > 0);
+        res.status(201).send(result.insertedCount > 0);
       })
     })
    

@@ -15,25 +15,30 @@ client.connect(err => {
   const AllProductCollection = client.db("fake-shop").collection("AllProduct");
   const UseBuyProductCollection = client.db("fake-shop").collection("userBuyProduct");
   router.get("/allProducts",(req,res,next)=>{
-    AllProductCollection.find({})
-    .toArray((err, documents) => {
-      res.send(documents)
-    })
+    const searchValue  = req.headers.searchitem;
+    // console.log(searchValue.toLowerCase())
+
+    if(searchValue){
+      AllProductCollection.find({searchQuarry:{$regex:searchValue.toLowerCase()}})
+        .toArray((err, documents) => {
+          res.send(documents)
+        })
+    }
+    else{
+      AllProductCollection.find({})
+      .toArray((err, documents) => {
+        res.send(documents)
+      })
+    }
   })
-  // router.post('/',(req, res ,next) =>{
-  //   const id = req.body.id
-  //   const title = req.body.title
-  //   const description = req.body.description
-  //   const category = req.body.category
-  //   const image = req.body.image
-  //   const price = req.body.price
-  //   const quantity = req.body.quantity
-  //   const email = req.body.email
-  //   cartProductCollection.insertOne({id:id, title:title, description:description, category:category,price:price,image:image,quantity:quantity,email:email})
-  //     .then(result => {
-  //       res.send(result.insertedCount > 0);
-  //     })
+  // router.get("/searchQuarry/:searchValue",(req,res,next)=>{
+    // const searchValue  = req.params.searchValue;
+    // console.log(searchValue.toLowerCase())
+  //   AllProductCollection.find({searchQuarry:{$regex:searchValue.toLowerCase()}})
+  //   .toArray((err, documents) => {
+  //     res.send(documents)
   //   })
+  // })
     router.post('/userBuyProduct',(req, res ,next) =>{
       const id = req.body.id
       const title = req.body.title
@@ -45,17 +50,18 @@ client.connect(err => {
       const email = req.body.email
       const date = req.body.date
       const paymentID = req.body.paymentId
+      const totalPrice = req.body.totalPrice
       const userAddress =req.body.userAddress
-      UseBuyProductCollection.insertOne({id:id, title:title, description:description, category:category,price:price,image:image,quantity:quantity,email:email,date:date,userAddress:userAddress,paymentID:paymentID})
+      UseBuyProductCollection.insertOne({id:id, title:title, description:description, category:category,price:price,image:image,quantity:quantity,email:email,date:date,totalPrice:totalPrice,paymentID:paymentID,userAddress:userAddress})
         .then(result => {
-          res.send(result.insertedCount > 0);
+          res.status(201).send(result.insertedCount > 0);
         })
       })
       router.get("/userOrderProducts",(req,res,next)=>{
         const email = req.headers.email
         UseBuyProductCollection.find({email:email})
         .toArray((err, documents) => {
-          res.send(documents)
+          res.status(200).send(documents)
         })
       })
     // router.post("/addToCart",(req,res,next)=>{
@@ -70,7 +76,7 @@ client.connect(err => {
       console.log(id)
       cartProductCollection.find({_id:ObjectId(id)})
       .toArray((err, documents) => {
-        res.send(documents[0])
+        res.status(200).send(documents[0])
         console.log(documents[0])
       })
     })
@@ -86,7 +92,7 @@ client.connect(err => {
       // console.log(id)
       AllProductCollection.find({_id:ObjectId(id)})
       .toArray((err, documents) => {
-        res.send(documents[0])
+        res.status(200).send(documents[0])
       })
     })
     
