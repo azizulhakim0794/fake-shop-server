@@ -37,7 +37,7 @@ client.connect(err => {
     router.get("/addToCartSingleProduct",(req,res,next)=>{
       const id = req.headers.id
       console.log(id)
-      cartProductCollection.find({_id:ObjectId(id)})
+      cartProductCollection.findOne({_id:ObjectId(id)})
       .toArray((err, documents) => {
         res.status(200).send(documents[0])
         console.log(documents[0])
@@ -45,10 +45,16 @@ client.connect(err => {
     })
     router.delete("/",(req,res,next)=>{
       const id = req.headers.id
-      cartProductCollection.deleteOne({_id:ObjectId(id)})
+      if(id){
+        cartProductCollection.deleteOne({_id:ObjectId(id)})
       .then(result => {
         res.status(200).send(result.deletedCount>1)
       })
+     
+      }
+      else{
+        res.status(404).send("id is not found")
+      }
     })
     
 });
